@@ -2,14 +2,15 @@ import SwiftUI
 
 struct TranscriptView: View {
     @EnvironmentObject private var store: PracticeStore
+    @Environment(\.contentScale) private var contentScale
 
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 12) {
+                LazyVStack(alignment: .leading, spacing: AppZoom.scaled(12, by: contentScale)) {
                     if store.transcript.isEmpty {
                         EmptyTranscriptView()
-                            .frame(maxWidth: .infinity, minHeight: 360)
+                            .frame(maxWidth: .infinity, minHeight: AppZoom.scaled(360, by: contentScale))
                     } else {
                         ForEach(store.transcript) { item in
                             TranscriptRow(item: item)
@@ -17,7 +18,7 @@ struct TranscriptView: View {
                         }
                     }
                 }
-                .padding(18)
+                .padding(AppZoom.scaled(18, by: contentScale))
             }
             .onChange(of: store.transcript) { _, items in
                 if let last = items.last {
@@ -31,14 +32,17 @@ struct TranscriptView: View {
 }
 
 private struct EmptyTranscriptView: View {
+    @Environment(\.contentScale) private var contentScale
+
     var body: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: AppZoom.scaled(14, by: contentScale)) {
             Image(systemName: "bubble.left.and.text.bubble.right")
-                .font(.system(size: 44))
+                .font(.system(size: AppZoom.scaled(44, by: contentScale)))
                 .foregroundStyle(.secondary)
             Text("Ready")
-                .font(.title2)
+                .font(.system(size: AppZoom.scaled(20, by: contentScale), weight: .semibold))
             Text("Connect, speak, or type a prompt.")
+                .font(.system(size: AppZoom.scaled(13, by: contentScale)))
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -46,6 +50,7 @@ private struct EmptyTranscriptView: View {
 }
 
 private struct TranscriptRow: View {
+    @Environment(\.contentScale) private var contentScale
     let item: TranscriptItem
 
     var body: some View {
@@ -68,18 +73,19 @@ private struct TranscriptRow: View {
                 if item.isStreaming {
                     ProgressView()
                         .controlSize(.small)
-                        .scaleEffect(0.7)
+                        .scaleEffect(AppZoom.scaled(0.7, by: contentScale))
                 }
             }
-            .font(.caption)
+            .font(.system(size: AppZoom.scaled(11, by: contentScale)))
             .foregroundStyle(.secondary)
 
             Text(item.text)
+                .font(.system(size: AppZoom.scaled(14, by: contentScale)))
                 .textSelection(.enabled)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(12)
-        .frame(maxWidth: 560, alignment: .leading)
+        .padding(AppZoom.scaled(12, by: contentScale))
+        .frame(maxWidth: min(AppZoom.scaled(560, by: contentScale), 760), alignment: .leading)
         .background(background, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 8, style: .continuous)

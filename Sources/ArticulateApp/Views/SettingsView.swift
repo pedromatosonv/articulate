@@ -25,9 +25,26 @@ struct SettingsView: View {
                     .monospacedDigit()
                     .frame(width: 42, alignment: .trailing)
             }
+
+            HStack {
+                Text("Content zoom")
+                Slider(
+                    value: Binding(
+                        get: { store.contentScale },
+                        set: { store.setContentScale($0) }
+                    ),
+                    in: AppZoom.minimumScale...AppZoom.maximumScale,
+                    step: AppZoom.step
+                )
+                Text(store.contentScaleLabel)
+                    .monospacedDigit()
+                    .frame(width: 42, alignment: .trailing)
+                Button("Reset") {
+                    store.resetZoom()
+                }
+            }
         }
         .padding(20)
         .frame(width: 420)
     }
 }
-

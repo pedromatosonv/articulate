@@ -14,6 +14,7 @@ The application supports focused learning scenarios, ranging from casual small t
 - Playback of AI-generated PCM audio responses through AVFoundation.
 - Dedicated practice modes for Conversation, Interview, Pronunciation, and Small Talk.
 - Text fallback for environments where speaking is not convenient.
+- Adjustable content zoom with toolbar controls, settings, and keyboard shortcuts.
 - Project-local build and run script for repeatable development.
 
 ## Technical Stack
@@ -58,6 +59,15 @@ The same script supports a process check:
 ```bash
 ./script/build_and_run.sh --verify
 ```
+
+## Keyboard Shortcuts
+
+- `Command + K`: Connect.
+- `Command + Space`: Start speaking.
+- `Command + Shift + Space`: Stop speaking.
+- `Command + =`: Zoom in.
+- `Command + -`: Zoom out.
+- `Command + 0`: Reset zoom.
 
 ## Test
 

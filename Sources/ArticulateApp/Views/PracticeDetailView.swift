@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PracticeDetailView: View {
     @EnvironmentObject private var store: PracticeStore
+    @Environment(\.contentScale) private var contentScale
     @FocusState private var promptFocused: Bool
 
     var body: some View {
@@ -18,40 +19,50 @@ struct PracticeDetailView: View {
             ComposerView(promptFocused: _promptFocused)
         }
         .navigationTitle(store.selectedMode.title)
+        .font(.system(size: AppZoom.scaled(13, by: contentScale)))
     }
 }
 
 private struct HeaderView: View {
     @EnvironmentObject private var store: PracticeStore
+    @Environment(\.contentScale) private var contentScale
 
     var body: some View {
         HStack(spacing: 12) {
             Label(store.connectionStatus.title, systemImage: statusImage)
+                .font(.system(size: AppZoom.scaled(13, by: contentScale)))
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
                 .foregroundStyle(statusColor)
 
             Text(store.model)
-                .font(.caption)
+                .font(.system(size: AppZoom.scaled(11, by: contentScale)))
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
                 .foregroundStyle(.secondary)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
+                .padding(.horizontal, AppZoom.scaled(8, by: contentScale))
+                .padding(.vertical, AppZoom.scaled(4, by: contentScale))
                 .background(.quaternary, in: Capsule())
 
             Spacer()
 
             HStack(spacing: 8) {
                 Text("Speed")
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
                     .foregroundStyle(.secondary)
                 Slider(value: $store.speed, in: 0.75...1.25, step: 0.05)
-                    .frame(width: 150)
+                    .frame(width: AppZoom.scaled(150, by: contentScale))
                 Text(store.speed.formatted(.number.precision(.fractionLength(2))))
                     .monospacedDigit()
+                    .lineLimit(1)
                     .foregroundStyle(.secondary)
-                    .frame(width: 38, alignment: .trailing)
+                    .frame(width: AppZoom.scaled(38, by: contentScale), alignment: .trailing)
             }
-            .font(.caption)
+            .font(.system(size: AppZoom.scaled(11, by: contentScale)))
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 12)
+        .padding(.horizontal, AppZoom.scaled(18, by: contentScale))
+        .padding(.vertical, AppZoom.scaled(12, by: contentScale))
         .background(.bar)
     }
 
@@ -82,10 +93,11 @@ private struct HeaderView: View {
 
 private struct ComposerView: View {
     @EnvironmentObject private var store: PracticeStore
+    @Environment(\.contentScale) private var contentScale
     @FocusState var promptFocused: Bool
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: AppZoom.scaled(10, by: contentScale)) {
             if let lastError = store.lastError {
                 HStack(spacing: 8) {
                     Image(systemName: "exclamationmark.triangle")
@@ -93,11 +105,11 @@ private struct ComposerView: View {
                         .lineLimit(2)
                     Spacer()
                 }
-                .font(.caption)
+                .font(.system(size: AppZoom.scaled(11, by: contentScale)))
                 .foregroundStyle(.orange)
             }
 
-            HStack(spacing: 12) {
+            HStack(spacing: AppZoom.scaled(12, by: contentScale)) {
                 Button {
                     Task {
                         if store.isRecording {
@@ -109,13 +121,15 @@ private struct ComposerView: View {
                 } label: {
                     Label(store.isRecording ? "Stop" : "Speak", systemImage: store.isRecording ? "stop.circle.fill" : "mic.circle.fill")
                         .labelStyle(.titleAndIcon)
-                        .frame(width: 96)
+                        .frame(width: AppZoom.scaled(96, by: contentScale))
                 }
+                .font(.system(size: AppZoom.scaled(13, by: contentScale)))
                 .buttonStyle(.borderedProminent)
                 .disabled(!store.connectionStatus.isConnected && store.connectionStatus == .connecting)
 
                 TextField("Type a prompt", text: $store.typedPrompt, axis: .vertical)
                     .textFieldStyle(.roundedBorder)
+                    .font(.system(size: AppZoom.scaled(13, by: contentScale)))
                     .lineLimit(1...4)
                     .focused($promptFocused)
                     .onSubmit {
@@ -127,12 +141,12 @@ private struct ComposerView: View {
                 } label: {
                     Label("Send", systemImage: "paperplane.fill")
                 }
+                .font(.system(size: AppZoom.scaled(13, by: contentScale)))
                 .keyboardShortcut(.return, modifiers: [.command])
                 .disabled(store.typedPrompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
         }
-        .padding(16)
+        .padding(AppZoom.scaled(16, by: contentScale))
         .background(.bar)
     }
 }
-
