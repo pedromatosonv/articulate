@@ -45,21 +45,6 @@ private struct HeaderView: View {
                 .background(.quaternary, in: Capsule())
 
             Spacer()
-
-            HStack(spacing: 8) {
-                Text("Speed")
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-                    .foregroundStyle(.secondary)
-                Slider(value: $store.speed, in: 0.75...1.25, step: 0.05)
-                    .frame(width: AppZoom.scaled(150, by: contentScale))
-                Text(store.speed.formatted(.number.precision(.fractionLength(2))))
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .foregroundStyle(.secondary)
-                    .frame(width: AppZoom.scaled(38, by: contentScale), alignment: .trailing)
-            }
-            .font(.system(size: AppZoom.scaled(11, by: contentScale)))
         }
         .padding(.horizontal, AppZoom.scaled(18, by: contentScale))
         .padding(.vertical, AppZoom.scaled(12, by: contentScale))

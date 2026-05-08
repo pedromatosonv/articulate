@@ -14,9 +14,6 @@ final class PracticeStore: ObservableObject {
     @Published var isRecording = false
     @Published var transcript: [TranscriptItem] = []
     @Published var typedPrompt = ""
-    @Published var speed = 1.0 {
-        didSet { Task { await refreshSession() } }
-    }
     @Published private(set) var contentScale: Double
     @Published var lastError: String?
 
@@ -207,8 +204,7 @@ final class PracticeStore: ObservableObject {
     private func sessionConfig() -> RealtimeSessionConfig {
         RealtimeSessionConfig(
             instructions: instructions(),
-            voice: "marin",
-            speed: speed
+            voice: "marin"
         )
     }
 

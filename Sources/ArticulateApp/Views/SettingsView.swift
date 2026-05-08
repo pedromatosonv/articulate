@@ -19,14 +19,6 @@ struct SettingsView: View {
             }
 
             HStack {
-                Text("Voice speed")
-                Slider(value: $store.speed, in: 0.75...1.25, step: 0.05)
-                Text(store.speed.formatted(.number.precision(.fractionLength(2))))
-                    .monospacedDigit()
-                    .frame(width: 42, alignment: .trailing)
-            }
-
-            HStack {
                 Text("Content zoom")
                 Slider(
                     value: Binding(
