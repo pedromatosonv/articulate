@@ -18,7 +18,7 @@ final class PracticeStore: ObservableObject {
     @Published var lastError: String?
 
     private let userDefaults: UserDefaults
-    private let audioEngine = RealtimeAudioEngine()
+    private lazy var audioEngine = RealtimeAudioEngine()
     private var client: RealtimeClient?
     private var currentCoachItemID: UUID?
     private var receivedAudioForCurrentTurn = false
