@@ -30,8 +30,30 @@ struct ContentView: View {
                     Label("Clear", systemImage: "trash")
                 }
                 .disabled(store.transcript.isEmpty)
+
+                Divider()
+
+                Button {
+                    store.zoomOut()
+                } label: {
+                    Label("Zoom Out", systemImage: "minus.magnifyingglass")
+                }
+                .disabled(!store.canZoomOut)
+
+                Button {
+                    store.resetZoom()
+                } label: {
+                    Label(store.contentScaleLabel, systemImage: "textformat.size")
+                }
+                .help("Reset Zoom")
+
+                Button {
+                    store.zoomIn()
+                } label: {
+                    Label("Zoom In", systemImage: "plus.magnifyingglass")
+                }
+                .disabled(!store.canZoomIn)
             }
         }
     }
 }
-

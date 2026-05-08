@@ -17,15 +17,58 @@ final class PracticeStore: ObservableObject {
     @Published var speed = 1.0 {
         didSet { Task { await refreshSession() } }
     }
+    @Published private(set) var contentScale: Double
     @Published var lastError: String?
 
+    private let userDefaults: UserDefaults
     private let audioEngine = RealtimeAudioEngine()
     private var client: RealtimeClient?
     private var currentCoachItemID: UUID?
     private var receivedAudioForCurrentTurn = false
 
+    init(userDefaults: UserDefaults = .standard) {
+        self.userDefaults = userDefaults
+
+        let storedScale = userDefaults.object(forKey: AppZoom.storageKey) as? Double ?? AppZoom.defaultScale
+        contentScale = AppZoom.rounded(AppZoom.clamped(storedScale))
+    }
+
     var canStartSpeaking: Bool {
         connectionStatus.isConnected && !isRecording
+    }
+
+    var canZoomOut: Bool {
+        contentScale > AppZoom.minimumScale
+    }
+
+    var canZoomIn: Bool {
+        contentScale < AppZoom.maximumScale
+    }
+
+    var contentScaleLabel: String {
+        AppZoom.percentLabel(for: contentScale)
+    }
+
+    func zoomIn() {
+        setContentScale(AppZoom.adjusted(contentScale, by: 1))
+    }
+
+    func zoomOut() {
+        setContentScale(AppZoom.adjusted(contentScale, by: -1))
+    }
+
+    func resetZoom() {
+        setContentScale(AppZoom.defaultScale)
+    }
+
+    func setContentScale(_ value: Double) {
+        let nextScale = AppZoom.rounded(AppZoom.clamped(value))
+        guard nextScale != contentScale else {
+            return
+        }
+
+        contentScale = nextScale
+        userDefaults.set(nextScale, forKey: AppZoom.storageKey)
     }
 
     func connect() async {
