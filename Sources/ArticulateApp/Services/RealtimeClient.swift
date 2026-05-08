@@ -3,7 +3,6 @@ import Foundation
 struct RealtimeSessionConfig {
     let instructions: String
     let voice: String
-    let speed: Double
 }
 
 enum RealtimeServerEvent {
@@ -99,8 +98,7 @@ final class RealtimeClient {
                             "type": "audio/pcm",
                             "rate": 24000
                         ],
-                        "voice": config.voice,
-                        "speed": config.speed
+                        "voice": config.voice
                     ]
                 ]
             ]
