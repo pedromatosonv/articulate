@@ -25,6 +25,31 @@ final class ArticulateModelTests: XCTestCase {
         XCTAssertEqual(AppZoom.percentLabel(for: 1.2), "120%")
     }
 
+    func testChatSessionRepositoryPersistsSessions() throws {
+        let fileURL = temporaryChatHistoryURL()
+        defer { try? FileManager.default.removeItem(at: fileURL.deletingLastPathComponent()) }
+
+        let repository = ChatSessionRepository(fileURL: fileURL)
+        let session = ChatSession(
+            title: "Bus commute correction",
+            mode: .conversation,
+            proficiency: .intermediate,
+            messages: [
+                TranscriptItem(role: .learner, text: "Hello", isStreaming: true)
+            ]
+        )
+
+        try repository.save([session])
+
+        let loadedSessions = try repository.load()
+        XCTAssertEqual(loadedSessions.count, 1)
+        XCTAssertEqual(loadedSessions[0].title, "Bus commute correction")
+        XCTAssertEqual(loadedSessions[0].mode, .conversation)
+        XCTAssertEqual(loadedSessions[0].proficiency, .intermediate)
+        XCTAssertEqual(loadedSessions[0].messages[0].text, "Hello")
+        XCTAssertFalse(loadedSessions[0].messages[0].isStreaming)
+    }
+
     @MainActor
     func testPracticeStorePersistsZoomScale() {
         let suiteName = "ArticulateModelTests-\(UUID().uuidString)"
@@ -42,5 +67,45 @@ final class ArticulateModelTests: XCTestCase {
 
         reloadedStore.setContentScale(5)
         XCTAssertEqual(reloadedStore.contentScale, AppZoom.maximumScale)
+    }
+
+    @MainActor
+    func testPracticeStoreCreatesRenamesSelectsAndDeletesSessions() throws {
+        let fileURL = temporaryChatHistoryURL()
+        defer { try? FileManager.default.removeItem(at: fileURL.deletingLastPathComponent()) }
+
+        let suiteName = "ArticulateModelTests-\(UUID().uuidString)"
+        let userDefaults = UserDefaults(suiteName: suiteName)!
+        defer { userDefaults.removePersistentDomain(forName: suiteName) }
+
+        let repository = ChatSessionRepository(fileURL: fileURL)
+        let store = PracticeStore(userDefaults: userDefaults, chatRepository: repository)
+
+        XCTAssertEqual(store.sessions.count, 1)
+        XCTAssertEqual(store.currentSessionTitle, "New Chat")
+
+        store.renameCurrentSession(to: "Interview warmup")
+        XCTAssertEqual(store.currentSessionTitle, "Interview warmup")
+
+        let firstSessionID = try XCTUnwrap(store.selectedSessionID)
+        store.createNewSession()
+        XCTAssertEqual(store.sessions.count, 2)
+        XCTAssertEqual(store.currentSessionTitle, "New Chat")
+
+        store.selectSession(firstSessionID)
+        XCTAssertEqual(store.currentSessionTitle, "Interview warmup")
+
+        store.deleteCurrentSession()
+        XCTAssertEqual(store.sessions.count, 1)
+        XCTAssertNotEqual(store.selectedSessionID, firstSessionID)
+
+        let reloadedSessions = try repository.load()
+        XCTAssertEqual(reloadedSessions.count, 1)
+    }
+
+    private func temporaryChatHistoryURL() -> URL {
+        FileManager.default.temporaryDirectory
+            .appendingPathComponent("ArticulateModelTests-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("chat-sessions.json", isDirectory: false)
     }
 }
