@@ -15,7 +15,7 @@ The application supports focused learning scenarios, ranging from casual small t
 - Dedicated practice modes for Conversation, Interview, Pronunciation, and Small Talk.
 - Persistent local chat history with saved sessions, search, rename, and delete actions.
 - Text fallback for environments where speaking is not convenient.
-- Adjustable content zoom with toolbar controls, settings, and keyboard shortcuts.
+- Adjustable content zoom through settings and keyboard shortcuts.
 - Project-local build and run script for repeatable development.
 
 ## Technical Stack
