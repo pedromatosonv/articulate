@@ -3,6 +3,9 @@ import SwiftUI
 struct SidebarView: View {
     @EnvironmentObject private var store: PracticeStore
     @Environment(\.contentScale) private var contentScale
+    @State private var isOpeningSettings = false
+
+    let onOpenSettings: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -47,15 +50,30 @@ struct SidebarView: View {
 
             Divider()
 
-            SettingsLink {
+            Button {
+                openSettings()
+            } label: {
                 Label("Settings", systemImage: "gearshape")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(.plain)
             .font(.system(size: AppZoom.scaled(13, by: contentScale)))
             .padding(AppZoom.scaled(14, by: contentScale))
+            .opacity(isOpeningSettings ? 0.45 : 1)
+            .animation(.easeOut(duration: 0.12), value: isOpeningSettings)
         }
         .navigationTitle("")
+    }
+
+    private func openSettings() {
+        guard !isOpeningSettings else { return }
+        isOpeningSettings = true
+
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 90_000_000)
+            onOpenSettings()
+            isOpeningSettings = false
+        }
     }
 
     private var historyGroups: [HistoryGroup] {

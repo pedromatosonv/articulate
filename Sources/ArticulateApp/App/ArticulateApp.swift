@@ -64,11 +64,5 @@ struct ArticulateApp: App {
                 .keyboardShortcut("0", modifiers: [.command])
             }
         }
-
-        Settings {
-            SettingsView()
-                .environmentObject(store)
-                .environment(\.contentScale, store.contentScale)
-        }
     }
 }
