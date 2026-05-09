@@ -25,6 +25,30 @@ final class ArticulateModelTests: XCTestCase {
         XCTAssertEqual(AppZoom.percentLabel(for: 1.2), "120%")
     }
 
+    func testCoachMessageFormatterSplitsLabeledFeedback() {
+        let segments = CoachMessageFormatter.segments(
+            from: """
+            Try this: I spent a lot of time on the bus.
+            Why: Use "spent" for past time and "on the bus" for the ride.
+            Question: What do you usually do on the bus?
+            """
+        )
+
+        XCTAssertEqual(segments.count, 3)
+        XCTAssertEqual(segments[0].label, "Try this")
+        XCTAssertEqual(segments[0].text, "I spent a lot of time on the bus.")
+        XCTAssertEqual(segments[1].label, "Why")
+        XCTAssertEqual(segments[2].label, "Question")
+    }
+
+    func testCoachMessageFormatterKeepsUnlabeledText() {
+        let segments = CoachMessageFormatter.segments(from: "Nice answer. What happened next?")
+
+        XCTAssertEqual(segments, [
+            CoachMessageSegment(id: 0, label: nil, text: "Nice answer. What happened next?")
+        ])
+    }
+
     func testChatSessionRepositoryPersistsSessions() throws {
         let fileURL = temporaryChatHistoryURL()
         defer { try? FileManager.default.removeItem(at: fileURL.deletingLastPathComponent()) }

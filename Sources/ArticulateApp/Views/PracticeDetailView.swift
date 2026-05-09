@@ -72,18 +72,14 @@ private struct HeaderView: View {
                 } label: {
                     Label(store.connectionStatus.title, systemImage: statusImage)
                         .labelStyle(.titleAndIcon)
+                        .padding(.horizontal, AppZoom.scaled(9, by: contentScale))
+                        .padding(.vertical, AppZoom.scaled(5, by: contentScale))
+                        .background(statusColor.opacity(0.12), in: Capsule())
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(statusColor)
 
-                Text(store.model)
-                    .font(.system(size: AppZoom.scaled(11, by: contentScale)))
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, AppZoom.scaled(8, by: contentScale))
-                    .padding(.vertical, AppZoom.scaled(4, by: contentScale))
-                    .background(.quaternary, in: Capsule())
+                SessionBadge(label: store.model, systemImage: "cpu", color: .secondary)
 
                 Menu {
                     Button("Clear Chat") {
@@ -120,6 +116,12 @@ private struct HeaderView: View {
                 .frame(width: AppZoom.scaled(150, by: contentScale))
 
                 Spacer()
+
+                SessionBadge(
+                    label: "\(store.selectedMode.title) / \(store.proficiency.title)",
+                    systemImage: store.selectedMode.systemImage,
+                    color: .secondary
+                )
             }
         }
         .padding(.horizontal, AppZoom.scaled(18, by: contentScale))
@@ -168,6 +170,26 @@ private struct HeaderView: View {
     private func commitRename() {
         store.renameCurrentSession(to: draftTitle)
         isRenaming = false
+    }
+}
+
+private struct SessionBadge: View {
+    @Environment(\.contentScale) private var contentScale
+
+    let label: String
+    let systemImage: String
+    let color: Color
+
+    var body: some View {
+        Label(label, systemImage: systemImage)
+            .labelStyle(.titleAndIcon)
+            .font(.system(size: AppZoom.scaled(11, by: contentScale), weight: .medium))
+            .lineLimit(1)
+            .truncationMode(.middle)
+            .foregroundStyle(color)
+            .padding(.horizontal, AppZoom.scaled(8, by: contentScale))
+            .padding(.vertical, AppZoom.scaled(4, by: contentScale))
+            .background(color.opacity(0.10), in: Capsule())
     }
 }
 

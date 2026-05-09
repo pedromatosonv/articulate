@@ -36,6 +36,7 @@ final class PracticeStore: ObservableObject {
     private var client: RealtimeClient?
     private var currentCoachItemID: UUID?
     private var receivedAudioForCurrentTurn = false
+    private var responseInProgress = false
     private var isApplyingSelectedSession = false
 
     init(userDefaults: UserDefaults = .standard, chatRepository: ChatSessionRepository = ChatSessionRepository()) {
@@ -160,6 +161,7 @@ final class PracticeStore: ObservableObject {
         client?.disconnect()
         client = nil
         connectionStatus = .idle
+        responseInProgress = false
     }
 
     func startSpeaking() async {
@@ -174,7 +176,10 @@ final class PracticeStore: ObservableObject {
         do {
             receivedAudioForCurrentTurn = false
             currentCoachItemID = nil
-            try? await client.cancelResponse()
+            if responseInProgress {
+                try? await client.cancelResponse()
+                responseInProgress = false
+            }
             try await client.clearInputAudio()
             try await audioEngine.startCapture { chunk in
                 Task {
@@ -198,7 +203,9 @@ final class PracticeStore: ObservableObject {
 
         do {
             try await client.commitInputAudioAndRespond()
+            responseInProgress = true
         } catch {
+            responseInProgress = false
             lastError = error.localizedDescription
         }
     }
@@ -226,7 +233,9 @@ final class PracticeStore: ObservableObject {
 
         do {
             try await client.sendText(text)
+            responseInProgress = true
         } catch {
+            responseInProgress = false
             lastError = error.localizedDescription
         }
     }
@@ -300,7 +309,11 @@ final class PracticeStore: ObservableObject {
         Do not overpraise. Be direct, warm, and practical.
         \(selectedMode.coachingDirective)
         Learner level: \(proficiency.title). \(proficiency.directive)
-        If the learner makes a grammar, pronunciation, or vocabulary mistake, briefly say "Try this:" and give a better version before continuing.
+        If the learner makes a grammar, pronunciation, or vocabulary mistake, format the answer as short separated lines:
+        Try this: <a better version>
+        Why: <one short reason>
+        Question: <one natural follow-up question>
+        If no correction is needed, answer briefly and ask one follow-up question.
         """
     }
 
@@ -318,11 +331,17 @@ final class PracticeStore: ObservableObject {
             receivedAudioForCurrentTurn = true
             audioEngine.enqueuePlayback(data)
         case .responseDone:
+            responseInProgress = false
             finishCoachMessage()
         case .notice(let message):
-            lastError = message
+            if !isBenignCancellationMessage(message) {
+                lastError = message
+            }
         case .error(let message):
-            lastError = message
+            responseInProgress = false
+            if !isBenignCancellationMessage(message) {
+                lastError = message
+            }
         }
     }
 
@@ -379,6 +398,7 @@ final class PracticeStore: ObservableObject {
         transcript = []
         currentCoachItemID = nil
         receivedAudioForCurrentTurn = false
+        responseInProgress = false
         lastError = nil
 
         if saveImmediately {
@@ -399,10 +419,17 @@ final class PracticeStore: ObservableObject {
         transcript = session.messages
         currentCoachItemID = nil
         receivedAudioForCurrentTurn = false
+        responseInProgress = false
         lastError = nil
         isApplyingSelectedSession = false
 
         Task { await refreshSession() }
+    }
+
+    private func isBenignCancellationMessage(_ message: String) -> Bool {
+        let normalized = message.lowercased()
+        return normalized.contains("cancellation failed")
+            && normalized.contains("no active response")
     }
 
     private func ensureSelectedSession() {
