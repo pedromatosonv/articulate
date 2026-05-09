@@ -1,30 +1,32 @@
 # Articulate
 
-**A web app for conversational English practice powered by OpenAI Realtime.**
+A web application for conversational English practice, powered by OpenAI Realtime and WebRTC.
 
-Articulate helps users practice spoken and written English with a focused AI coach. The app keeps the previous product shape from the macOS version: practice modes, proficiency levels, persistent chat history, search, rename/delete actions, typed fallback, realtime voice, and adjustable content zoom.
+![Articulate interface](artifacts/web-app-concept.png)
 
-The web migration uses a React/Vite client and a small local Express server. The browser connects to OpenAI Realtime with WebRTC through the server-side unified `/v1/realtime/calls` setup flow, so the `OPENAI_API_KEY` stays out of client JavaScript.
+## Overview
 
-![Articulate web app](artifacts/web-app-concept.png)
+Articulate provides a focused environment for practicing spoken and written English with an AI coach. It supports different practice scenarios, proficiency levels, voice interaction, and typed prompts so users can work through conversation practice in the format that fits their context.
+
+The app is built with a React/Vite client and a local Express API server. The browser connects to OpenAI Realtime through WebRTC, while the server handles Realtime call setup so the `OPENAI_API_KEY` stays out of client JavaScript.
 
 ## Features
 
-- Browser-based practice interface built with React and TypeScript.
-- Realtime voice interaction using OpenAI Realtime and `gpt-realtime-2`.
-- WebRTC microphone capture and model audio playback.
-- Dedicated practice modes for Conversation, Interview, Pronunciation, and Small Talk.
-- Persistent local chat history with saved sessions, search, rename, clear, and delete actions.
-- Text fallback for environments where speaking is not convenient.
+- Realtime voice practice using OpenAI Realtime and `gpt-realtime-2`.
+- WebRTC microphone capture, model audio playback, and Realtime data events.
+- Practice modes for Conversation, Interview, Pronunciation, and Small Talk.
+- Proficiency levels for adjusting the coaching context.
+- Typed prompt fallback when speaking is not convenient.
+- Persistent local chat history with search, rename, delete, and clear actions.
 - Settings panel for current chat behavior and content zoom.
 - Responsive layout for desktop, compact desktop, and mobile screens.
-- Express API server for secure Realtime session initialization.
 
 ## Technical Stack
 
 - React 19, Vite, and TypeScript for the web client.
 - Express for the local API server.
-- WebRTC data channels and media tracks for Realtime events and audio.
+- WebRTC data channels and media tracks for Realtime communication.
+- OpenAI Realtime call setup through `/v1/realtime/calls`.
 - Vitest for focused unit coverage.
 
 ## Requirements
@@ -41,7 +43,7 @@ Create a local environment file:
 cp .env.example .env.local
 ```
 
-Then add your API key:
+Add your API key:
 
 ```bash
 OPENAI_API_KEY=your_api_key_here
@@ -56,23 +58,23 @@ Install dependencies:
 npm install
 ```
 
-## Run
+## Development
 
-Start the API server and Vite dev server together:
+Start the Express API server and Vite development server together:
 
 ```bash
 npm run dev
 ```
 
-Then open:
+Open the app at:
 
 ```text
 http://localhost:5173
 ```
 
-The API server runs on `http://localhost:8787`; Vite proxies `/api` calls to it during development.
+The API server runs on `http://localhost:8787`. During development, Vite proxies `/api` requests to the Express server.
 
-## Build And Test
+## Validation
 
 ```bash
 npm run lint
@@ -80,12 +82,14 @@ npm run test
 npm run build
 ```
 
-After building, the Express server can also serve the compiled app:
+## Production Build
+
+After building, the Express server can serve the compiled app:
 
 ```bash
 npm run server
 ```
 
-## Status
+## Project Status
 
-Articulate is now a web app. The native macOS SwiftUI implementation has been removed from this migration branch.
+Articulate is a personal project for exploring realtime AI interaction in a practical language-learning workflow. The current version focuses on a local web experience with secure server-side Realtime setup and a responsive browser interface.
