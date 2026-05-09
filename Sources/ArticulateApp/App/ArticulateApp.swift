@@ -21,7 +21,12 @@ struct ArticulateApp: App {
                 .frame(minWidth: 980, minHeight: 660)
         }
         .commands {
-            CommandGroup(after: .newItem) {
+            CommandGroup(replacing: .newItem) {
+                Button("New Chat") {
+                    store.createNewSession()
+                }
+                .keyboardShortcut("n", modifiers: [.command])
+
                 Button("Connect") {
                     Task { await store.connect() }
                 }

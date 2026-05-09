@@ -5,14 +5,14 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Picker("Default mode", selection: $store.selectedMode) {
+            Picker("Current chat mode", selection: $store.selectedMode) {
                 ForEach(PracticeMode.allCases) { mode in
                     Label(mode.title, systemImage: mode.systemImage)
                         .tag(mode)
                 }
             }
 
-            Picker("Level", selection: $store.proficiency) {
+            Picker("Current chat level", selection: $store.proficiency) {
                 ForEach(ProficiencyLevel.allCases) { level in
                     Text(level.title).tag(level)
                 }

@@ -1,6 +1,6 @@
 import Foundation
 
-enum PracticeMode: String, CaseIterable, Identifiable {
+enum PracticeMode: String, CaseIterable, Identifiable, Codable {
     case conversation
     case interview
     case pronunciation
@@ -48,7 +48,7 @@ enum PracticeMode: String, CaseIterable, Identifiable {
     }
 }
 
-enum ProficiencyLevel: String, CaseIterable, Identifiable {
+enum ProficiencyLevel: String, CaseIterable, Identifiable, Codable {
     case beginner
     case intermediate
     case advanced
@@ -77,4 +77,3 @@ enum ProficiencyLevel: String, CaseIterable, Identifiable {
         }
     }
 }
-

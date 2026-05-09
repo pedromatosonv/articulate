@@ -13,6 +13,7 @@ The application supports focused learning scenarios, ranging from casual small t
 - Microphone capture converted to 24 kHz mono PCM audio.
 - Playback of AI-generated PCM audio responses through AVFoundation.
 - Dedicated practice modes for Conversation, Interview, Pronunciation, and Small Talk.
+- Persistent local chat history with saved sessions, search, rename, and delete actions.
 - Text fallback for environments where speaking is not convenient.
 - Adjustable content zoom with toolbar controls, settings, and keyboard shortcuts.
 - Project-local build and run script for repeatable development.
@@ -63,6 +64,7 @@ The same script supports a process check:
 ## Keyboard Shortcuts
 
 - `Command + K`: Connect.
+- `Command + N`: New chat.
 - `Command + Space`: Start speaking.
 - `Command + Shift + Space`: Stop speaking.
 - `Command + =`: Zoom in.

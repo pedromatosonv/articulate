@@ -6,33 +6,12 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             SidebarView()
-                .navigationSplitViewColumnWidth(min: 220, ideal: 260, max: 320)
+                .navigationSplitViewColumnWidth(min: 280, ideal: 310, max: 360)
         } detail: {
             PracticeDetailView()
         }
         .toolbar {
             ToolbarItemGroup {
-                Button {
-                    Task {
-                        if store.connectionStatus.isConnected {
-                            await store.disconnect()
-                        } else {
-                            await store.connect()
-                        }
-                    }
-                } label: {
-                    Label(store.connectionStatus.isConnected ? "Disconnect" : "Connect", systemImage: store.connectionStatus.isConnected ? "bolt.horizontal.circle.fill" : "bolt.horizontal.circle")
-                }
-
-                Button {
-                    store.clearTranscript()
-                } label: {
-                    Label("Clear", systemImage: "trash")
-                }
-                .disabled(store.transcript.isEmpty)
-
-                Divider()
-
                 Button {
                     store.zoomOut()
                 } label: {
