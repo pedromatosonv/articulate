@@ -1,34 +1,36 @@
 # Articulate
 
-**A native macOS coach for conversational English practice powered by OpenAI Realtime.**
+**A web app for conversational English practice powered by OpenAI Realtime.**
 
-Articulate is a native macOS application designed to help users refine their English speaking and listening skills through direct interaction with AI. Built with SwiftUI and integrated with the OpenAI Realtime API, the app provides a low-latency environment for natural, voice-based practice.
+Articulate helps users practice spoken and written English with a focused AI coach. The app keeps the previous product shape from the macOS version: practice modes, proficiency levels, persistent chat history, search, rename/delete actions, typed fallback, realtime voice, and adjustable content zoom.
 
-The application supports focused learning scenarios, ranging from casual small talk to professional interview preparation. By combining microphone capture, realtime audio streaming, assistant audio playback, and typed prompts, Articulate offers a practical space for active language practice without the friction of traditional learning tools.
+The web migration uses a React/Vite client and a small local Express server. The browser connects to OpenAI Realtime with WebRTC through the server-side unified `/v1/realtime/calls` setup flow, so the `OPENAI_API_KEY` stays out of client JavaScript.
+
+![Articulate web app](artifacts/web-app-concept.png)
 
 ## Features
 
-- Native macOS interface built with SwiftUI.
+- Browser-based practice interface built with React and TypeScript.
 - Realtime voice interaction using OpenAI Realtime and `gpt-realtime-2`.
-- Microphone capture converted to 24 kHz mono PCM audio.
-- Playback of AI-generated PCM audio responses through AVFoundation.
+- WebRTC microphone capture and model audio playback.
 - Dedicated practice modes for Conversation, Interview, Pronunciation, and Small Talk.
-- Persistent local chat history with saved sessions, search, rename, and delete actions.
+- Persistent local chat history with saved sessions, search, rename, clear, and delete actions.
 - Text fallback for environments where speaking is not convenient.
-- Adjustable content zoom through settings and keyboard shortcuts.
-- Project-local build and run script for repeatable development.
+- Settings panel for current chat behavior and content zoom.
+- Responsive layout for desktop, compact desktop, and mobile screens.
+- Express API server for secure Realtime session initialization.
 
 ## Technical Stack
 
-- SwiftUI for the macOS interface.
-- AVFoundation for microphone capture, PCM conversion, and audio playback.
-- URLSession WebSocket client for OpenAI Realtime events.
-- Swift Package Manager for build and test workflows.
+- React 19, Vite, and TypeScript for the web client.
+- Express for the local API server.
+- WebRTC data channels and media tracks for Realtime events and audio.
+- Vitest for focused unit coverage.
 
 ## Requirements
 
-- macOS 14 or newer.
-- Xcode command line tools or a compatible Swift toolchain.
+- Node.js 24 or newer.
+- npm 11 or newer.
 - An OpenAI API key with available API credits.
 
 ## Setup
@@ -43,46 +45,47 @@ Then add your API key:
 
 ```bash
 OPENAI_API_KEY=your_api_key_here
+PORT=8787
 ```
 
-The `.env.local` file is ignored by Git and should not be committed.
+`PORT` is optional and defaults to `8787`. The `.env.local` file is ignored by Git and should not be committed.
+
+Install dependencies:
+
+```bash
+npm install
+```
 
 ## Run
 
-Build and launch the app as a macOS bundle:
+Start the API server and Vite dev server together:
 
 ```bash
-./script/build_and_run.sh
+npm run dev
 ```
 
-The same script supports a process check:
+Then open:
+
+```text
+http://localhost:5173
+```
+
+The API server runs on `http://localhost:8787`; Vite proxies `/api` calls to it during development.
+
+## Build And Test
 
 ```bash
-./script/build_and_run.sh --verify
+npm run lint
+npm run test
+npm run build
 ```
 
-## Keyboard Shortcuts
-
-- `Command + K`: Connect.
-- `Command + N`: New chat.
-- `Command + Space`: Start speaking.
-- `Command + Shift + Space`: Stop speaking.
-- `Command + =`: Zoom in.
-- `Command + -`: Zoom out.
-- `Command + 0`: Reset zoom.
-
-## Test
+After building, the Express server can also serve the compiled app:
 
 ```bash
-swift test
+npm run server
 ```
-
-## Why I Built This
-
-I developed Articulate to bridge the gap between passive language study and active conversation. As a software engineer working in a globalized environment, I wanted a tool for consistent, low-stakes English practice that felt like a native part of my workspace.
-
-This project is also a practical exploration of realtime AI interaction in a desktop app: audio capture, WebSocket event handling, streamed responses, and a focused SwiftUI interface built around a real personal workflow.
 
 ## Status
 
-Articulate is an ongoing personal project. Feedback, issues, and implementation discussions are welcome.
+Articulate is now a web app. The native macOS SwiftUI implementation has been removed from this migration branch.
